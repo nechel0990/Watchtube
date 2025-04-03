@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto Link Interaction</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        #loading { display: none; margin-top: 20px; font-size: 18px; color: blue; }
+    </style>
+</head>
+<body>
+    <h2>Paste a Link for Automation</h2>
+    <input type="text" id="linkInput" placeholder="Enter link here">
+    <button onclick="runAutomation()">Start</button>
+    
+    <p id="loading">Processing... Please wait.</p>
+    <p id="status"></p>
+
+    <script>
+        function runAutomation() {
+            let link = document.getElementById("linkInput").value;
+            if (!link) { alert("Please enter a link!"); return; }
+            
+            document.getElementById("loading").style.display = "block";
+            fetch("https://api.github.com/repos/YOUR_GITHUB_USERNAME/Auto-Link-Interaction/actions/workflows/run-bot.yml/dispatches", {
+                method: "POST",
+                headers: {
+                    "Accept": "application/vnd.github.v3+json",
+                    "Authorization": "token YOUR_GITHUB_PERSONAL_ACCESS_TOKEN"
+                },
+                body: JSON.stringify({ ref: "main", inputs: { link: link } })
+            }).then(response => {
+                document.getElementById("loading").style.display = "none";
+                document.getElementById("status").innerText = "Automation started!";
+            }).catch(error => {
+                document.getElementById("loading").style.display = "none";
+                document.getElementById("status").innerText = "Error starting automation.";
+            });
+        }
+    </script>
+</body>
+</html>
